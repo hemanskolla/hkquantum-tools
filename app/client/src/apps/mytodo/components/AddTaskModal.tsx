@@ -13,12 +13,22 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
   const [description, setDescription] = useState(editing?.description ?? '');
   const [categoryId, setCategoryId] = useState(editing?.category_id ?? '');
   const [timeSensitive, setTimeSensitive] = useState(editing?.time_sensitive ?? false);
+  const [dueDate, setDueDate] = useState(editing?.due_date ?? '');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+
+  function handleTimeSensitiveChange(checked: boolean) {
+    setTimeSensitive(checked);
+    if (!checked) setDueDate('');
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
+    if (timeSensitive && !dueDate) {
+      setError('A due date is required for time-sensitive tasks.');
+      return;
+    }
     setSaving(true);
 
     const body = {
@@ -26,6 +36,7 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
       description: description.trim() || null,
       category_id: categoryId || null,
       time_sensitive: timeSensitive,
+      due_date: timeSensitive ? dueDate : null,
     };
 
     const url = editing ? `/api/mytodo/tasks/${editing.id}` : '/api/mytodo/tasks';
@@ -91,10 +102,23 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
             <input
               type="checkbox"
               checked={timeSensitive}
-              onChange={(e) => setTimeSensitive(e.target.checked)}
+              onChange={(e) => handleTimeSensitiveChange(e.target.checked)}
             />
             Mark as time sensitive (pins to top)
           </label>
+
+          {timeSensitive && (
+            <label className="modal-label">
+              Due Date
+              <input
+                className="modal-input"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
+            </label>
+          )}
 
           {error && <p className="modal-error">{error}</p>}
 

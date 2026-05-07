@@ -14,6 +14,7 @@ function toTask(doc: Record<string, any>): Task {
     description: doc.description ?? null,
     category_id: doc.category_id ? doc.category_id.toString() : null,
     time_sensitive: doc.time_sensitive ?? false,
+    due_date: doc.due_date ?? null,
     completed: doc.completed ?? false,
     completed_at: doc.completed_at ?? null,
     created_at: doc.created_at,
@@ -39,21 +40,24 @@ router.get('/', async (req, res) => {
     return;
   }
 
-  // Default: active tasks
+  // Default: active tasks — time-sensitive first, sorted by due_date asc; then rest by updated_at desc
   const docs = await getTodoDb()
     .collection('tasks')
     .find({ completed: false })
-    .sort({ time_sensitive: -1, updated_at: -1 })
+    .sort({ time_sensitive: -1, due_date: 1, updated_at: -1 })
     .toArray();
   res.json(docs.map(toTask));
 });
 
 router.post('/', async (req, res) => {
-  const { title, description, category_id, time_sensitive } = req.body as {
-    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean;
+  const { title, description, category_id, time_sensitive, due_date } = req.body as {
+    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean; due_date?: string | null;
   };
 
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
+
+  const isTimeSensitive = time_sensitive ?? false;
+  if (isTimeSensitive && !due_date) { res.status(400).json({ error: 'due_date is required for time-sensitive tasks' }); return; }
 
   let catOid: ObjectId | null = null;
   if (category_id) {
@@ -66,7 +70,8 @@ router.post('/', async (req, res) => {
     title: title.trim(),
     description: description?.trim() || null,
     category_id: catOid,
-    time_sensitive: time_sensitive ?? false,
+    time_sensitive: isTimeSensitive,
+    due_date: isTimeSensitive ? (due_date ?? null) : null,
     completed: false,
     completed_at: null,
     created_at: now,
@@ -82,11 +87,14 @@ router.put('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const { title, description, category_id, time_sensitive } = req.body as {
-    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean;
+  const { title, description, category_id, time_sensitive, due_date } = req.body as {
+    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean; due_date?: string | null;
   };
 
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
+
+  const isTimeSensitive = time_sensitive ?? false;
+  if (isTimeSensitive && !due_date) { res.status(400).json({ error: 'due_date is required for time-sensitive tasks' }); return; }
 
   let catOid: ObjectId | null = null;
   if (category_id) {
@@ -101,7 +109,8 @@ router.put('/:id', async (req, res) => {
         title: title.trim(),
         description: description?.trim() || null,
         category_id: catOid,
-        time_sensitive: time_sensitive ?? false,
+        time_sensitive: isTimeSensitive,
+        due_date: isTimeSensitive ? (due_date ?? null) : null,
         updated_at: new Date().toISOString(),
       },
     },

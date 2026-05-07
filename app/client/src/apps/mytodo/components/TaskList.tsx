@@ -38,7 +38,14 @@ export default function TaskList({ tasks, categories, view, onEdit, onDelete, on
     );
   }
 
-  const urgent = tasks.filter((t) => t.time_sensitive);
+  const urgent = tasks
+    .filter((t) => t.time_sensitive)
+    .sort((a, b) => {
+      if (!a.due_date && !b.due_date) return 0;
+      if (!a.due_date) return 1;
+      if (!b.due_date) return -1;
+      return a.due_date.localeCompare(b.due_date);
+    });
   const rest = tasks.filter((t) => !t.time_sensitive);
 
   return (
