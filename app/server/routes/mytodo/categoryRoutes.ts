@@ -11,17 +11,23 @@ router.get('/', async (_req, res) => {
     col.find({ type: { $exists: false } }).toArray(),
   ]);
 
+  const isOther = (name: string) => name.toLowerCase() === 'other';
+
   if (orderDoc?.order?.length) {
     const idxMap = new Map<string, number>(
       (orderDoc.order as ObjectId[]).map((id, i) => [id.toString(), i])
     );
     docs.sort((a, b) => {
+      if (isOther(a.name) !== isOther(b.name)) return isOther(a.name) ? 1 : -1;
       const ai = idxMap.get(a._id.toString()) ?? Infinity;
       const bi = idxMap.get(b._id.toString()) ?? Infinity;
       return ai !== bi ? ai - bi : a.name.localeCompare(b.name);
     });
   } else {
-    docs.sort((a, b) => a.name.localeCompare(b.name));
+    docs.sort((a, b) => {
+      if (isOther(a.name) !== isOther(b.name)) return isOther(a.name) ? 1 : -1;
+      return a.name.localeCompare(b.name);
+    });
   }
 
   res.json(docs.map((d) => ({ id: d._id.toString(), name: d.name, created_at: d.created_at })));
