@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDb, OTHER_CATEGORY_ID } from '../../db.js';
+import { getDb, LEDGER_OTHER_CATEGORY_ID } from '../../db.js';
 import type { ContactWithNotes } from '../../../shared/types/myledger.js';
 
 const router = Router();
@@ -15,7 +15,7 @@ function toContact(doc: Record<string, any>): ContactWithNotes {
     linkedin: doc.linkedin ?? null,
     email: doc.email ?? null,
     phone: doc.phone ?? null,
-    categories: (doc.categories ?? [{ id: OTHER_CATEGORY_ID, status: 'actual' }]).map(
+    categories: (doc.categories ?? [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }]).map(
       (c: Record<string, any>) => ({
         id: c.id.toString(),
         status: c.status === 'potential' ? 'potential' : 'actual',
@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
     try { parsedCats = parseCategories(categories); }
     catch { res.status(400).json({ error: 'Invalid categories' }); return; }
   } else {
-    parsedCats = [{ id: OTHER_CATEGORY_ID, status: 'actual' }];
+    parsedCats = [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }];
   }
 
   const now = new Date().toISOString();

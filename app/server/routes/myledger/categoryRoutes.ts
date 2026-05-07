@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDb, OTHER_CATEGORY_ID } from '../../db.js';
+import { getDb, LEDGER_OTHER_CATEGORY_ID } from '../../db.js';
 
 const router = Router();
 
@@ -11,7 +11,7 @@ router.get('/', async (_req, res) => {
     col.find({ type: { $exists: false } }).toArray(),
   ]);
 
-  const otherId = OTHER_CATEGORY_ID.toString();
+  const otherId = LEDGER_OTHER_CATEGORY_ID.toString();
   const isOther = (id: string) => id === otherId;
 
   if (orderDoc?.order?.length) {
