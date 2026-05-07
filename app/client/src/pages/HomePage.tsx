@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 
 export default function HomePage() {
+  useEffect(() => { document.title = 'hkquantum-tools'; }, []);
   return (
     <div className="home-layout">
       <Header />
