@@ -206,7 +206,7 @@ export default function TodoPage() {
         <div className="todo-main">
           {showCalendar ? (
             <CalendarView
-              tasks={tasks}
+              tasks={visibleTasks}
               categories={categories}
               onBack={() => setShowCalendar(false)}
             />
