@@ -10,6 +10,7 @@ export interface Task {
   description: string | null;
   category_id: string | null;
   time_sensitive: boolean;
+  due_date: string | null;
   completed: boolean;
   completed_at: string | null;
   created_at: string;

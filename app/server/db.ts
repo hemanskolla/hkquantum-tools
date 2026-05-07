@@ -17,6 +17,12 @@ export async function connect() {
 
   await _ledger_db.collection('categories').createIndex({ name: 1 }, { unique: true });
   await _todo_db.collection('categories').createIndex({ name: 1 }, { unique: true });
+
+  // Backfill: ensure all task documents have due_date field (null for non-time-sensitive)
+  await _todo_db.collection('tasks').updateMany(
+    { due_date: { $exists: false } },
+    { $set: { due_date: null } },
+  );
 }
 
 export function getDb(): Db {
