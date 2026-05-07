@@ -78,7 +78,7 @@ export default function TaskItem({ task, categories, onEdit, onDelete, onToggleC
             aria-label="Edit task"
             title="Edit"
           >
-            <span style={{ display: 'inline-block', transform: 'rotate(-45deg)' }}>✏</span>
+            <span style={{ display: 'inline-block', transform: 'rotate(135deg)' }}>✏</span>
           </button>
           <button
             className="task-action-btn task-action-btn--danger"
