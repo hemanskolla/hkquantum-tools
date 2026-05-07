@@ -12,7 +12,7 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
   const [title, setTitle] = useState(editing?.title ?? '');
   const [description, setDescription] = useState(editing?.description ?? '');
   const [categoryId, setCategoryId] = useState(editing?.category_id ?? '');
-  const [urgent, setUrgent] = useState(editing?.urgent ?? false);
+  const [timeSensitive, setTimeSensitive] = useState(editing?.time_sensitive ?? false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -25,7 +25,7 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
       title: title.trim(),
       description: description.trim() || null,
       category_id: categoryId || null,
-      urgent,
+      time_sensitive: timeSensitive,
     };
 
     const url = editing ? `/api/mytodo/tasks/${editing.id}` : '/api/mytodo/tasks';
@@ -90,10 +90,10 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
           <label className="modal-checkbox-row">
             <input
               type="checkbox"
-              checked={urgent}
-              onChange={(e) => setUrgent(e.target.checked)}
+              checked={timeSensitive}
+              onChange={(e) => setTimeSensitive(e.target.checked)}
             />
-            Mark as urgent (pins to top)
+            Mark as time sensitive (pins to top)
           </label>
 
           {error && <p className="modal-error">{error}</p>}

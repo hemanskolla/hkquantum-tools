@@ -38,8 +38,8 @@ export default function TaskList({ tasks, categories, view, onEdit, onDelete, on
     );
   }
 
-  const urgent = tasks.filter((t) => t.urgent);
-  const rest = tasks.filter((t) => !t.urgent);
+  const urgent = tasks.filter((t) => t.time_sensitive);
+  const rest = tasks.filter((t) => !t.time_sensitive);
 
   return (
     <div className="todo-list">

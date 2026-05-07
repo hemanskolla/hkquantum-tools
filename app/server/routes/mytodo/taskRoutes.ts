@@ -13,7 +13,7 @@ function toTask(doc: Record<string, any>): Task {
     title: doc.title,
     description: doc.description ?? null,
     category_id: doc.category_id ? doc.category_id.toString() : null,
-    urgent: doc.urgent ?? false,
+    time_sensitive: doc.time_sensitive ?? false,
     completed: doc.completed ?? false,
     completed_at: doc.completed_at ?? null,
     created_at: doc.created_at,
@@ -43,14 +43,14 @@ router.get('/', async (req, res) => {
   const docs = await getTodoDb()
     .collection('tasks')
     .find({ completed: false })
-    .sort({ urgent: -1, updated_at: -1 })
+    .sort({ time_sensitive: -1, updated_at: -1 })
     .toArray();
   res.json(docs.map(toTask));
 });
 
 router.post('/', async (req, res) => {
-  const { title, description, category_id, urgent } = req.body as {
-    title?: string; description?: string; category_id?: string | null; urgent?: boolean;
+  const { title, description, category_id, time_sensitive } = req.body as {
+    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean;
   };
 
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     title: title.trim(),
     description: description?.trim() || null,
     category_id: catOid,
-    urgent: urgent ?? false,
+    time_sensitive: time_sensitive ?? false,
     completed: false,
     completed_at: null,
     created_at: now,
@@ -82,8 +82,8 @@ router.put('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const { title, description, category_id, urgent } = req.body as {
-    title?: string; description?: string; category_id?: string | null; urgent?: boolean;
+  const { title, description, category_id, time_sensitive } = req.body as {
+    title?: string; description?: string; category_id?: string | null; time_sensitive?: boolean;
   };
 
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
@@ -101,7 +101,7 @@ router.put('/:id', async (req, res) => {
         title: title.trim(),
         description: description?.trim() || null,
         category_id: catOid,
-        urgent: urgent ?? false,
+        time_sensitive: time_sensitive ?? false,
         updated_at: new Date().toISOString(),
       },
     },

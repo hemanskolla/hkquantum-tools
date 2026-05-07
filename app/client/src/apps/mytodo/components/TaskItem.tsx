@@ -63,8 +63,8 @@ export default function TaskItem({ task, categories, onEdit, onDelete, onToggleC
         )}
         <div className="task-meta">
           {category && <span className="task-cat-pill">{category.name}</span>}
-          {task.urgent && !task.completed && (
-            <span className="task-urgent-badge">! urgent</span>
+          {task.time_sensitive && !task.completed && (
+            <span className="task-urgent-badge">! time sensitive</span>
           )}
           <span className="task-time">{timeLabel}</span>
         </div>
