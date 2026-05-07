@@ -404,6 +404,7 @@
   color: var(--secondary-color);
 }
 .todo-completed-banner strong { color: var(--accent-color); }
+.cal-banner { margin: 0 0 1rem; }
 
 /* ── Task list container ── */
 .todo-list {

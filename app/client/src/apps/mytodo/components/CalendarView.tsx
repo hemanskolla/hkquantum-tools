@@ -81,6 +81,10 @@ export default function CalendarView({ tasks, categories, onBack }: CalendarView
         </div>
       </div>
 
+      <div className="todo-completed-banner cal-banner">
+        Only <strong>time-sensitive tasks</strong> are shown here. Tasks without a due date will not appear.
+      </div>
+
       <div className="cal-grid-wrap">
         <div className="cal-grid">
           {DAY_LABELS.map((d) => (
