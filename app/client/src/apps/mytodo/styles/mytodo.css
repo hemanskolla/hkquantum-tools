@@ -223,8 +223,9 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--dark-color);
-  min-width: 9rem;
+  min-width: 10rem;
   text-align: center;
+  white-space: nowrap;
 }
 
 .cal-grid-wrap {
@@ -391,6 +392,131 @@
   border: 1px solid var(--border-color);
   margin-top: .1rem;
   width: fit-content;
+}
+
+/* ── Month / Week mode toggle ── */
+.cal-mode-toggle {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cal-mode-btn {
+  padding: .35rem .85rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background: var(--white);
+  transition: background .12s, color .12s;
+  line-height: 1;
+}
+.cal-mode-btn:hover:not(.cal-mode-btn--active) {
+  background: var(--background-color);
+  color: var(--dark-color);
+}
+.cal-mode-btn--active {
+  background: var(--dark-color);
+  color: var(--white);
+}
+
+/* ── Week grid ── */
+.cal-week-grid-wrap {
+  width: 100%;
+}
+
+.cal-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-week-col {
+  min-height: 96px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+  text-align: left;
+}
+.cal-week-col:hover { background: var(--background-color); border-color: var(--secondary-color); }
+
+.cal-week-col--today { border-color: var(--accent-color); background: rgba(187,10,33,.04); }
+.cal-week-col--today .cal-week-day-num { color: var(--accent-color); font-weight: 700; }
+.cal-week-col--past { opacity: .5; }
+.cal-week-col--selected {
+  border-color: var(--dark-color);
+  background: rgba(0,0,0,.04);
+  box-shadow: 0 0 0 2px var(--dark-color);
+}
+
+.cal-week-col-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .1rem;
+  padding: .4rem .25rem .3rem;
+  border-bottom: 1px solid var(--border-color);
+  background: inherit;
+}
+
+.cal-week-day-letter {
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.cal-week-day-num {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  line-height: 1;
+}
+
+.cal-week-col-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: .3rem .25rem;
+  flex: 1;
+}
+
+.cal-week-task-pill {
+  font-size: .65rem;
+  font-weight: 500;
+  color: var(--dark-color);
+  background: rgba(196,90,0,.09);
+  border-radius: 3px;
+  padding: .1rem .3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 1.4;
+}
+
+.cal-week-overflow {
+  font-size: .63rem;
+  font-weight: 700;
+  color: #c45a00;
+  padding: .05rem .3rem;
+  line-height: 1.4;
+}
+
+.cal-week-no-tasks {
+  font-size: .72rem;
+  color: var(--border-color);
+  padding: .1rem .3rem;
+  display: block;
 }
 
 /* ── TBD box ── */
