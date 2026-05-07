@@ -65,7 +65,7 @@ export default function TaskItem({ task, categories, onEdit, onDelete, onToggleC
           {category && <span className="task-cat-pill">{category.name}</span>}
           {task.time_sensitive && !task.completed && (
             <span className="task-urgent-badge">
-              ! due {task.due_date ? new Date(task.due_date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
+              due {task.due_date ? new Date(task.due_date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD'}
             </span>
           )}
           <span className="task-time">{timeLabel}</span>
