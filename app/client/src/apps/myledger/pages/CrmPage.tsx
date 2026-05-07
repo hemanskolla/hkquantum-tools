@@ -32,6 +32,7 @@ export default function CrmPage() {
     }
   }
 
+  useEffect(() => { document.title = 'myLEDGER'; }, []);
   useEffect(() => { void reload(); }, []);
 
   function handleFilterToggle(id: string) {
