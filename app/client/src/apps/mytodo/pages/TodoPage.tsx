@@ -21,6 +21,7 @@ import TaskList from '../components/TaskList';
 import FabMenu from '../components/FabMenu';
 import AddCategoryModal from '../components/AddCategoryModal';
 import AddTaskModal from '../components/AddTaskModal';
+import CalendarView from '../components/CalendarView';
 
 interface SortableCatBtnProps {
   cat: TodoCategory;
@@ -69,6 +70,7 @@ export default function TodoPage() {
   const [sidebarEditMode, setSidebarEditMode] = useState(false);
   const [modal, setModal] = useState<Modal>('none');
   const [editing, setEditing] = useState<Task | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
@@ -202,35 +204,62 @@ export default function TodoPage() {
 
         {/* ── Main content ── */}
         <div className="todo-main">
-          <div className="todo-tabs">
-            <button
-              className={`todo-tab${view === 'active' ? ' todo-tab--active' : ''}`}
-              onClick={() => switchView('active')}
-            >
-              Active
-            </button>
-            <button
-              className={`todo-tab${view === 'completed' ? ' todo-tab--active' : ''}`}
-              onClick={() => switchView('completed')}
-            >
-              Completed
-            </button>
-          </div>
+          {showCalendar ? (
+            <CalendarView
+              tasks={tasks}
+              categories={categories}
+              onBack={() => setShowCalendar(false)}
+            />
+          ) : (
+            <>
+              <div className="todo-tabs">
+                <button
+                  className={`todo-tab${view === 'active' ? ' todo-tab--active' : ''}`}
+                  onClick={() => switchView('active')}
+                >
+                  Active
+                </button>
+                <button
+                  className={`todo-tab${view === 'completed' ? ' todo-tab--active' : ''}`}
+                  onClick={() => switchView('completed')}
+                >
+                  Completed
+                </button>
+                <button
+                  className="todo-tab-calendar-btn"
+                  onClick={() => setShowCalendar(true)}
+                  aria-label="Calendar view"
+                  title="Calendar view"
+                >
+                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+                    <rect x="1.5" y="3" width="14" height="12.5" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M1.5 7h14" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5 1.5v3M12 1.5v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="5.5" cy="10.5" r=".85" fill="currentColor" />
+                    <circle cx="8.5" cy="10.5" r=".85" fill="currentColor" />
+                    <circle cx="11.5" cy="10.5" r=".85" fill="currentColor" />
+                    <circle cx="5.5" cy="13.5" r=".85" fill="currentColor" />
+                    <circle cx="8.5" cy="13.5" r=".85" fill="currentColor" />
+                  </svg>
+                </button>
+              </div>
 
-          {view === 'completed' && (
-            <div className="todo-completed-banner">
-              Showing tasks completed in the <strong>past 14 days</strong>. Older completed tasks are automatically removed.
-            </div>
+              {view === 'completed' && (
+                <div className="todo-completed-banner">
+                  Showing tasks completed in the <strong>past 14 days</strong>. Older completed tasks are automatically removed.
+                </div>
+              )}
+
+              <TaskList
+                tasks={visibleTasks}
+                categories={categories}
+                view={view}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleComplete={handleToggleComplete}
+              />
+            </>
           )}
-
-          <TaskList
-            tasks={visibleTasks}
-            categories={categories}
-            view={view}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleComplete={handleToggleComplete}
-          />
         </div>
       </div>
 
