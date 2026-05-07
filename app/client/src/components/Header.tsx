@@ -11,6 +11,12 @@ export default function Header() {
         >
           myLEDGER
         </NavLink>
+        <NavLink
+          to="/mytodo"
+          className={({ isActive }) => `site-nav-link${isActive ? ' site-nav-link--active' : ''}`}
+        >
+          myTODO
+        </NavLink>
       </nav>
     </header>
   );

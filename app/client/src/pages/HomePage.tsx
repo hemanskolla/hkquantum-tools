@@ -22,6 +22,12 @@ export default function HomePage() {
               Linked Entity Data &amp; Governance Engine for Relationships — a personal CRM for tracking contacts, categories, and notes.
             </p>
           </Link>
+          <Link to="/mytodo" className="app-card">
+            <h2 className="app-card-name">myTODO</h2>
+            <p className="app-card-desc">
+              Tracker for Outstanding Duties Obsessively — manage tasks by category, flag urgent items, and track completion.
+            </p>
+          </Link>
         </div>
       </section>
     </div>
