@@ -57,7 +57,6 @@ router.post('/', async (req, res) => {
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
 
   const isTimeSensitive = time_sensitive ?? false;
-  if (isTimeSensitive && !due_date) { res.status(400).json({ error: 'due_date is required for time-sensitive tasks' }); return; }
 
   let catOid: ObjectId | null = null;
   if (category_id) {
@@ -94,7 +93,6 @@ router.put('/:id', async (req, res) => {
   if (!title?.trim()) { res.status(400).json({ error: 'title is required' }); return; }
 
   const isTimeSensitive = time_sensitive ?? false;
-  if (isTimeSensitive && !due_date) { res.status(400).json({ error: 'due_date is required for time-sensitive tasks' }); return; }
 
   let catOid: ObjectId | null = null;
   if (category_id) {

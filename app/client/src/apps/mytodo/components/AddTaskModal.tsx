@@ -25,10 +25,6 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
-    if (timeSensitive && !dueDate) {
-      setError('A due date is required for time-sensitive tasks.');
-      return;
-    }
     setSaving(true);
 
     const body = {
@@ -36,7 +32,7 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
       description: description.trim() || null,
       category_id: categoryId || null,
       time_sensitive: timeSensitive,
-      due_date: timeSensitive ? dueDate : null,
+      due_date: timeSensitive ? (dueDate || null) : null,
     };
 
     const url = editing ? `/api/mytodo/tasks/${editing.id}` : '/api/mytodo/tasks';
@@ -109,13 +105,12 @@ export default function AddTaskModal({ categories, editing, onClose, onSuccess }
 
           {timeSensitive && (
             <label className="modal-label">
-              Due Date
+              Due Date <span style={{ fontWeight: 400, color: 'var(--secondary-color)', fontSize: '.8rem' }}>(optional — leave blank for TBD)</span>
               <input
                 className="modal-input"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                required
               />
             </label>
           )}
