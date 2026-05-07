@@ -5,8 +5,47 @@ import { getTodoDb } from '../../db.js';
 const router = Router();
 
 router.get('/', async (_req, res) => {
-  const docs = await getTodoDb().collection('categories').find().sort({ name: 1 }).toArray();
+  const col = getTodoDb().collection('categories');
+  const [orderDoc, docs] = await Promise.all([
+    col.findOne({ type: 'order-doc' }),
+    col.find({ type: { $exists: false } }).toArray(),
+  ]);
+
+  if (orderDoc?.order?.length) {
+    const idxMap = new Map<string, number>(
+      (orderDoc.order as ObjectId[]).map((id, i) => [id.toString(), i])
+    );
+    docs.sort((a, b) => {
+      const ai = idxMap.get(a._id.toString()) ?? Infinity;
+      const bi = idxMap.get(b._id.toString()) ?? Infinity;
+      return ai !== bi ? ai - bi : a.name.localeCompare(b.name);
+    });
+  } else {
+    docs.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   res.json(docs.map((d) => ({ id: d._id.toString(), name: d.name, created_at: d.created_at })));
+});
+
+router.put('/order', async (req, res) => {
+  const { order } = req.body as { order?: string[] };
+  if (!Array.isArray(order)) {
+    res.status(400).json({ error: 'order must be an array of id strings' });
+    return;
+  }
+  let objectIds: ObjectId[];
+  try {
+    objectIds = order.map((id) => new ObjectId(id));
+  } catch {
+    res.status(400).json({ error: 'invalid id in order array' });
+    return;
+  }
+  await getTodoDb().collection('categories').updateOne(
+    { type: 'order-doc' },
+    { $set: { type: 'order-doc', order: objectIds } },
+    { upsert: true }
+  );
+  res.status(204).send();
 });
 
 router.post('/', async (req, res) => {
