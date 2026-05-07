@@ -1,11 +1,61 @@
 import '../styles/mytodo.css';
 import { useEffect, useMemo, useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { Task, TodoCategory } from '@shared/types/mytodo';
 import Header from '../../../components/Header';
 import TaskList from '../components/TaskList';
 import FabMenu from '../components/FabMenu';
 import AddCategoryModal from '../components/AddCategoryModal';
 import AddTaskModal from '../components/AddTaskModal';
+
+interface SortableCatBtnProps {
+  cat: TodoCategory;
+  isActive: boolean;
+  editMode: boolean;
+  onSelect: () => void;
+}
+
+function SortableCatBtn({ cat, isActive, editMode, onSelect }: SortableCatBtnProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: cat.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined,
+  };
+
+  return (
+    <button
+      ref={setNodeRef}
+      style={style}
+      className={[
+        'sidebar-cat-btn',
+        isActive && !editMode ? 'sidebar-cat-btn--active' : '',
+        editMode ? 'sidebar-cat-btn--draggable' : '',
+      ].filter(Boolean).join(' ')}
+      onClick={editMode ? undefined : onSelect}
+      {...(editMode ? { ...attributes, ...listeners } : {})}
+    >
+      <span className="sidebar-cat-dot" />
+      {cat.name}
+    </button>
+  );
+}
 
 type View = 'active' | 'completed';
 type Modal = 'none' | 'category' | 'task';
@@ -16,8 +66,25 @@ export default function TodoPage() {
   const [view, setView] = useState<View>('active');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarEditMode, setSidebarEditMode] = useState(false);
   const [modal, setModal] = useState<Modal>('none');
   const [editing, setEditing] = useState<Task | null>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
+
+  function handleCategoryDragEnd(event: DragEndEvent) {
+    const { active: dragActive, over } = event;
+    if (!over || dragActive.id === over.id) return;
+    const oldIdx = categories.findIndex((c) => c.id === dragActive.id);
+    const newIdx = categories.findIndex((c) => c.id === over.id);
+    const reordered = arrayMove(categories, oldIdx, newIdx);
+    setCategories(reordered);
+    void fetch('/api/mytodo/categories/order', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order: reordered.map((c) => c.id) }),
+    });
+  }
 
   useEffect(() => { document.title = 'myTODO'; }, []);
 
@@ -94,26 +161,41 @@ export default function TodoPage() {
 
           {sidebarOpen && (
             <div className="todo-sidebar__content">
-              <span className="todo-sidebar__label">Categories</span>
+              <div className="todo-sidebar__label-row">
+                <span className="todo-sidebar__label">Categories</span>
+                {categories.length > 1 && (
+                  <button
+                    className={`sidebar-edit-btn${sidebarEditMode ? ' sidebar-edit-btn--active' : ''}`}
+                    onClick={() => setSidebarEditMode((e) => !e)}
+                  >
+                    {sidebarEditMode ? 'Done' : 'Edit'}
+                  </button>
+                )}
+              </div>
 
-              <button
-                className={`sidebar-cat-btn${selectedCategoryId === null ? ' sidebar-cat-btn--active' : ''}`}
-                onClick={() => setSelectedCategoryId(null)}
-              >
-                <span className="sidebar-cat-dot" />
-                All
-              </button>
-
-              {categories.map((cat) => (
+              {!sidebarEditMode && (
                 <button
-                  key={cat.id}
-                  className={`sidebar-cat-btn${selectedCategoryId === cat.id ? ' sidebar-cat-btn--active' : ''}`}
-                  onClick={() => setSelectedCategoryId((prev) => prev === cat.id ? null : cat.id)}
+                  className={`sidebar-cat-btn${selectedCategoryId === null ? ' sidebar-cat-btn--active' : ''}`}
+                  onClick={() => setSelectedCategoryId(null)}
                 >
                   <span className="sidebar-cat-dot" />
-                  {cat.name}
+                  All
                 </button>
-              ))}
+              )}
+
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCategoryDragEnd}>
+                <SortableContext items={categories.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+                  {categories.map((cat) => (
+                    <SortableCatBtn
+                      key={cat.id}
+                      cat={cat}
+                      isActive={selectedCategoryId === cat.id}
+                      editMode={sidebarEditMode}
+                      onSelect={() => setSelectedCategoryId((prev) => prev === cat.id ? null : cat.id)}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             </div>
           )}
         </aside>

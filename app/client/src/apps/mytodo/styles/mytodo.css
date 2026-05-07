@@ -48,14 +48,32 @@
   flex: 1;
 }
 
+.todo-sidebar__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .4rem .5rem .2rem;
+}
+
 .todo-sidebar__label {
   font-size: .65rem;
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--primary-color);
-  padding: .4rem .5rem .2rem;
 }
+
+.sidebar-edit-btn {
+  font-size: .65rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  opacity: .55;
+  padding: .15rem .35rem;
+  border-radius: 4px;
+  transition: opacity .12s, color .12s, background .12s;
+}
+.sidebar-edit-btn:hover { opacity: 1; background: var(--background-color); }
+.sidebar-edit-btn--active { opacity: 1; color: var(--accent-color); }
 
 .sidebar-cat-btn {
   display: flex;
@@ -88,6 +106,8 @@
   background: var(--border-color);
 }
 .sidebar-cat-btn--active .sidebar-cat-dot { background: var(--accent-color); }
+.sidebar-cat-btn--draggable { cursor: grab; border: 1px dashed var(--border-color); border-radius: 6px; opacity: .85; }
+.sidebar-cat-btn--draggable:active { cursor: grabbing; }
 
 /* ── Main todo area ── */
 .todo-main {
