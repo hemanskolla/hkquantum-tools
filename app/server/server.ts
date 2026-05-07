@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import { connect } from './db.js';
 import categoryRoutes from './routes/myledger/categoryRoutes.js';
 import contactRoutes from './routes/myledger/contactRoutes.js';
+import todoCategoryRoutes from './routes/mytodo/categoryRoutes.js';
+import todoTaskRoutes from './routes/mytodo/taskRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -21,6 +23,8 @@ app.use('/api', (_req, res, next) => {
 
 app.use('/api/myledger/categories', categoryRoutes);
 app.use('/api/myledger/contacts', contactRoutes);
+app.use('/api/mytodo/categories', todoCategoryRoutes);
+app.use('/api/mytodo/tasks', todoTaskRoutes);
 
 const distPath = path.join(__dirname, '../client/dist');
 app.use(express.static(distPath));
