@@ -393,6 +393,74 @@
   width: fit-content;
 }
 
+/* ── TBD box ── */
+.cal-tbd-wrap {
+  margin-top: 1.25rem;
+}
+
+.cal-tbd-btn {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  width: 100%;
+  padding: .75rem 1.1rem;
+  border: 1px solid #a36200;
+  border-radius: 10px;
+  background: rgba(196,90,0,.06);
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s, border-color .12s;
+  font-family: inherit;
+}
+.cal-tbd-btn:hover { background: rgba(196,90,0,.11); }
+.cal-tbd-btn--active {
+  border-color: #c45a00;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+.cal-tbd-btn--active + .cal-detail {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-color: transparent;
+  margin-top: 0;
+}
+
+.cal-tbd-label {
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: #c45a00;
+  text-transform: uppercase;
+}
+
+.cal-tbd-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 .35rem;
+  border-radius: 20px;
+  background: #c45a00;
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.cal-tbd-desc {
+  flex: 1;
+  font-size: .82rem;
+  color: var(--secondary-color);
+}
+
+.cal-tbd-chevron {
+  font-size: .65rem;
+  color: #c45a00;
+}
+
+.cal-detail-dot--tbd { background: #a36200; }
+
 /* ── Completed banner ── */
 .todo-completed-banner {
   margin: 1rem 1.5rem 0;

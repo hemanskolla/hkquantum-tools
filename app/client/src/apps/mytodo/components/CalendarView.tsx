@@ -18,8 +18,10 @@ export default function CalendarView({ tasks, categories, onBack }: CalendarView
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [showTbd, setShowTbd] = useState(false);
 
   const timeSensitiveTasks = tasks.filter((t) => t.time_sensitive && t.due_date);
+  const tbdTasks = tasks.filter((t) => t.time_sensitive && !t.due_date);
 
   function tasksByDay(day: number): Task[] {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -82,7 +84,7 @@ export default function CalendarView({ tasks, categories, onBack }: CalendarView
       </div>
 
       <div className="todo-completed-banner cal-banner">
-        Only <strong>time-sensitive tasks</strong> are shown here. Tasks without a due date will not appear.
+        Only <strong>time-sensitive tasks</strong> are shown here. Tasks with no due date appear in the <strong>TBD</strong> box below.
       </div>
 
       <div className="cal-grid-wrap">
@@ -157,7 +159,44 @@ export default function CalendarView({ tasks, categories, onBack }: CalendarView
         </div>
       )}
 
-      {timeSensitiveTasks.length === 0 && (
+      {tbdTasks.length > 0 && (
+        <div className="cal-tbd-wrap">
+          <button
+            className={`cal-tbd-btn${showTbd ? ' cal-tbd-btn--active' : ''}`}
+            onClick={() => setShowTbd((v) => !v)}
+            aria-expanded={showTbd}
+          >
+            <span className="cal-tbd-label">TBD</span>
+            <span className="cal-tbd-count">{tbdTasks.length}</span>
+            <span className="cal-tbd-desc">time-sensitive task{tbdTasks.length !== 1 ? 's' : ''} with no due date</span>
+            <span className="cal-tbd-chevron">{showTbd ? '▲' : '▼'}</span>
+          </button>
+          {showTbd && (
+            <div className="cal-detail">
+              <div className="cal-detail-header">Time-Sensitive — Due Date TBD</div>
+              <ul className="cal-detail-list">
+                {tbdTasks.map((task) => {
+                  const catName = getCategoryName(task.category_id);
+                  return (
+                    <li key={task.id} className="cal-detail-item">
+                      <span className="cal-detail-dot cal-detail-dot--tbd" />
+                      <div className="cal-detail-body">
+                        <span className="cal-detail-title">{task.title}</span>
+                        {task.description && (
+                          <span className="cal-detail-desc">{task.description}</span>
+                        )}
+                        {catName && <span className="cal-detail-cat">{catName}</span>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {timeSensitiveTasks.length === 0 && tbdTasks.length === 0 && (
         <div className="todo-empty">No time-sensitive tasks to display.</div>
       )}
     </div>
