@@ -90,7 +90,33 @@
   transition: background .12s, color .12s;
   white-space: nowrap;
   overflow: hidden;
+}
+.sidebar-cat-name {
+  flex: 1;
+  overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar-cat-count {
+  flex-shrink: 0;
+  margin-left: auto;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 .35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--border-color);
+  color: var(--secondary-color);
+  font-size: .67rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: background .12s, color .12s;
+}
+.sidebar-cat-btn--active .sidebar-cat-count {
+  background: rgba(187,10,33,.15);
+  color: var(--accent-color);
 }
 .sidebar-cat-btn:hover { background: var(--background-color); color: var(--dark-color); }
 .sidebar-cat-btn--active {
