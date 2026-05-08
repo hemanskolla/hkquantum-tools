@@ -27,10 +27,11 @@ interface SortableCatBtnProps {
   cat: TodoCategory;
   isActive: boolean;
   editMode: boolean;
+  count: number;
   onSelect: () => void;
 }
 
-function SortableCatBtn({ cat, isActive, editMode, onSelect }: SortableCatBtnProps) {
+function SortableCatBtn({ cat, isActive, editMode, count, onSelect }: SortableCatBtnProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: cat.id });
 
@@ -53,7 +54,8 @@ function SortableCatBtn({ cat, isActive, editMode, onSelect }: SortableCatBtnPro
       {...(editMode ? { ...attributes, ...listeners } : {})}
     >
       <span className="sidebar-cat-dot" />
-      {cat.name}
+      <span className="sidebar-cat-name">{cat.name}</span>
+      {!editMode && <span className="sidebar-cat-count">{count}</span>}
     </button>
   );
 }
@@ -145,6 +147,14 @@ export default function TodoPage() {
     return tasks.filter((t) => t.category_id === selectedCategoryId);
   }, [tasks, selectedCategoryId]);
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of tasks) {
+      if (t.category_id) counts[t.category_id] = (counts[t.category_id] ?? 0) + 1;
+    }
+    return counts;
+  }, [tasks]);
+
   return (
     <div className="todo-layout">
       <Header />
@@ -181,7 +191,8 @@ export default function TodoPage() {
                   onClick={() => setSelectedCategoryId(null)}
                 >
                   <span className="sidebar-cat-dot" />
-                  All
+                  <span className="sidebar-cat-name">All</span>
+                  <span className="sidebar-cat-count">{tasks.length}</span>
                 </button>
               )}
 
@@ -193,6 +204,7 @@ export default function TodoPage() {
                       cat={cat}
                       isActive={selectedCategoryId === cat.id}
                       editMode={sidebarEditMode}
+                      count={categoryCounts[cat.id] ?? 0}
                       onSelect={() => setSelectedCategoryId((prev) => prev === cat.id ? null : cat.id)}
                     />
                   ))}
