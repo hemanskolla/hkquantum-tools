@@ -4,14 +4,15 @@ import type { TodoCategory, Task } from '@shared/types/mytodo';
 interface Props {
   categories: TodoCategory[];
   editing: Task | null;
+  initialCategoryId?: string | null;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function AddTaskModal({ categories, editing, onClose, onSuccess }: Props) {
+export default function AddTaskModal({ categories, editing, initialCategoryId, onClose, onSuccess }: Props) {
   const [title, setTitle] = useState(editing?.title ?? '');
   const [description, setDescription] = useState(editing?.description ?? '');
-  const [categoryId, setCategoryId] = useState(editing?.category_id ?? '');
+  const [categoryId, setCategoryId] = useState(editing?.category_id ?? initialCategoryId ?? '');
   const [timeSensitive, setTimeSensitive] = useState(editing?.time_sensitive ?? false);
   const [dueDate, setDueDate] = useState(editing?.due_date ?? '');
   const [error, setError] = useState('');
