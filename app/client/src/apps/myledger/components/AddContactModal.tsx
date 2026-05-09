@@ -18,9 +18,11 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   const [linkedin, setLinkedin] = useState(editing?.linkedin ?? '');
   const [email, setEmail] = useState(editing?.email ?? '');
   const [phone, setPhone] = useState(editing?.phone ?? '');
-  const [rows, setRows] = useState<CategoryRow[]>(
-    editing?.categories.length ? editing.categories : [{ id: '', status: 'actual' }]
-  );
+  const [rows, setRows] = useState<CategoryRow[]>(() => {
+    if (editing?.categories.length) return editing.categories;
+    const other = categories.find((c) => c.name === 'Other');
+    return [{ id: other?.id ?? '', status: 'actual' }];
+  });
   const [notes, setNotes] = useState(editing?.notes.map((n) => n.body).join('\n') ?? '');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
