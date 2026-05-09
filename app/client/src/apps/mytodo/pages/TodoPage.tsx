@@ -291,6 +291,7 @@ export default function TodoPage() {
         <AddTaskModal
           categories={categories}
           editing={editing}
+          initialCategoryId={editing ? null : selectedCategoryId}
           onClose={() => { setModal('none'); setEditing(null); }}
           onSuccess={() => void reloadTasks(view)}
         />
