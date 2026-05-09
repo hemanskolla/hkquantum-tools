@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Category, ContactWithNotes } from '@shared/types/myledger';
+import { LEDGER_OTHER_CATEGORY_ID } from '@shared/constants';
 
 interface Props {
   categories: Category[];
@@ -19,7 +20,7 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   const [email, setEmail] = useState(editing?.email ?? '');
   const [phone, setPhone] = useState(editing?.phone ?? '');
   const [rows, setRows] = useState<CategoryRow[]>(
-    editing?.categories.length ? editing.categories : [{ id: '', status: 'actual' }]
+    editing?.categories.length ? editing.categories : [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }]
   );
   const [notes, setNotes] = useState(editing?.notes.map((n) => n.body).join('\n') ?? '');
   const [error, setError] = useState('');
@@ -82,8 +83,8 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   }
 
   const sortedCategories = [...categories].sort((a, b) => {
-    if (a.name === 'Other') return 1;
-    if (b.name === 'Other') return -1;
+    if (a.id === LEDGER_OTHER_CATEGORY_ID) return 1;
+    if (b.id === LEDGER_OTHER_CATEGORY_ID) return -1;
     return 0;
   });
 
