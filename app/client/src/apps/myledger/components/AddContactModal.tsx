@@ -83,8 +83,8 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   }
 
   const sortedCategories = [...categories].sort((a, b) => {
-    if (a.name === 'Other') return 1;
-    if (b.name === 'Other') return -1;
+    if (a.id === LEDGER_OTHER_CATEGORY_ID) return 1;
+    if (b.id === LEDGER_OTHER_CATEGORY_ID) return -1;
     return 0;
   });
 
