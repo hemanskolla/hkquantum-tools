@@ -27,13 +27,9 @@ router.get('/', async (req, res) => {
 
   if (view === 'completed') {
     const cutoff = new Date(Date.now() - PURGE_WINDOW_MS).toISOString();
-    await getTodoDb().collection('tasks').deleteMany({
-      completed: true,
-      completed_at: { $lt: cutoff },
-    });
     const docs = await getTodoDb()
       .collection('tasks')
-      .find({ completed: true })
+      .find({ completed: true, completed_at: { $gte: cutoff } })
       .sort({ completed_at: -1 })
       .toArray();
     res.json(docs.map(toTask));
