@@ -1,10 +1,11 @@
 import { MongoClient, Db, ObjectId } from 'mongodb';
+import { LEDGER_OTHER_CATEGORY_ID as LEDGER_OTHER_ID, TODO_OTHER_CATEGORY_ID as TODO_OTHER_ID } from '@shared/constants';
 
 let _ledger_db!: Db;
 let _todo_db!: Db;
 
-export const LEDGER_OTHER_CATEGORY_ID = new ObjectId('69ed71237ba869aee9620036');
-export const TODO_OTHER_CATEGORY_ID = new ObjectId('69fc03fc96ac919bc68df48c');
+export const LEDGER_OTHER_CATEGORY_ID = new ObjectId(LEDGER_OTHER_ID);
+export const TODO_OTHER_CATEGORY_ID = new ObjectId(TODO_OTHER_ID);
 
 export async function connect() {
   const uri = process.env.MONGODB_URI;
