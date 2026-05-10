@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Category, ContactWithNotes } from '@shared/types/myledger';
-import { LEDGER_OTHER_CATEGORY_ID } from '@shared/constants';
+import { useAuth } from '../../../context/AuthContext';
 
 interface Props {
   categories: Category[];
@@ -12,6 +12,9 @@ interface Props {
 type CategoryRow = { id: string; status: 'actual' | 'potential' };
 
 export default function AddContactModal({ categories, editing, onClose, onSuccess }: Props) {
+  const { user } = useAuth();
+  const otherId = user?.ledgerOtherId ?? '';
+
   const [name, setName] = useState(editing?.name ?? '');
   const [role, setRole] = useState(editing?.role ?? '');
   const [company, setCompany] = useState(editing?.company ?? '');
@@ -20,7 +23,7 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   const [email, setEmail] = useState(editing?.email ?? '');
   const [phone, setPhone] = useState(editing?.phone ?? '');
   const [rows, setRows] = useState<CategoryRow[]>(
-    editing?.categories.length ? editing.categories : [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }]
+    editing?.categories.length ? editing.categories : [{ id: otherId, status: 'actual' }]
   );
   const [notes, setNotes] = useState(editing?.notes.map((n) => n.body).join('\n') ?? '');
   const [error, setError] = useState('');
@@ -83,8 +86,8 @@ export default function AddContactModal({ categories, editing, onClose, onSucces
   }
 
   const sortedCategories = [...categories].sort((a, b) => {
-    if (a.id === LEDGER_OTHER_CATEGORY_ID) return 1;
-    if (b.id === LEDGER_OTHER_CATEGORY_ID) return -1;
+    if (a.id === otherId) return 1;
+    if (b.id === otherId) return -1;
     return 0;
   });
 

@@ -1,0 +1,13 @@
+{
+  "name": "hkquantum-tools",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "cd app && npm run start:server",
+    "heroku-postbuild": "cd app && npm install && npm run build"
+  }
+}

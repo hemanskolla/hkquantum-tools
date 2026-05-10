@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { TodoCategory, Task } from '@shared/types/mytodo';
-import { TODO_OTHER_CATEGORY_ID } from '@shared/constants';
+import { useAuth } from '../../../context/AuthContext';
 
 interface Props {
   categories: TodoCategory[];
@@ -11,9 +11,12 @@ interface Props {
 }
 
 export default function AddTaskModal({ categories, editing, initialCategoryId, onClose, onSuccess }: Props) {
+  const { user } = useAuth();
+  const otherId = user?.todoOtherId ?? '';
+
   const [title, setTitle] = useState(editing?.title ?? '');
   const [description, setDescription] = useState(editing?.description ?? '');
-  const [categoryId, setCategoryId] = useState(editing?.category_id ?? initialCategoryId ?? TODO_OTHER_CATEGORY_ID);
+  const [categoryId, setCategoryId] = useState(editing?.category_id ?? initialCategoryId ?? otherId);
   const [timeSensitive, setTimeSensitive] = useState(editing?.time_sensitive ?? false);
   const [dueDate, setDueDate] = useState(editing?.due_date ?? '');
   const [error, setError] = useState('');

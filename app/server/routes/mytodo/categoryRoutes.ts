@@ -1,18 +1,17 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getTodoDb, TODO_OTHER_CATEGORY_ID } from '../../db.js';
 
 const router = Router();
 
-router.get('/', async (_req, res) => {
-  const col = getTodoDb().collection('categories');
+router.get('/', async (req, res) => {
+  const col = req.todoDb.collection('categories');
+  const otherId = req.todoOtherId.toString();
+  const isOther = (id: string) => id === otherId;
+
   const [orderDoc, docs] = await Promise.all([
     col.findOne({ type: 'order-doc' }),
     col.find({ type: { $exists: false } }).toArray(),
   ]);
-
-  const otherId = TODO_OTHER_CATEGORY_ID.toString();
-  const isOther = (id: string) => id === otherId;
 
   if (orderDoc?.order?.length) {
     const idxMap = new Map<string, number>(
@@ -51,7 +50,7 @@ router.put('/order', async (req, res) => {
     res.status(400).json({ error: 'invalid id in order array' });
     return;
   }
-  await getTodoDb().collection('categories').updateOne(
+  await req.todoDb.collection('categories').updateOne(
     { type: 'order-doc' },
     { $set: { type: 'order-doc', order: objectIds } },
     { upsert: true }
@@ -65,7 +64,7 @@ router.post('/', async (req, res) => {
 
   const now = new Date().toISOString();
   try {
-    const result = await getTodoDb().collection('categories').insertOne({ name: name.trim(), created_at: now });
+    const result = await req.todoDb.collection('categories').insertOne({ name: name.trim(), created_at: now });
     res.status(201).json({ id: result.insertedId.toString(), name: name.trim(), created_at: now });
   } catch (err: any) {
     if (err?.code === 11000) { res.status(409).json({ error: 'Category already exists' }); return; }
@@ -78,10 +77,10 @@ router.delete('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const inUse = await getTodoDb().collection('tasks').findOne({ category_id: oid });
+  const inUse = await req.todoDb.collection('tasks').findOne({ category_id: oid });
   if (inUse) { res.status(409).json({ error: 'Category is in use by one or more tasks' }); return; }
 
-  const result = await getTodoDb().collection('categories').deleteOne({ _id: oid });
+  const result = await req.todoDb.collection('categories').deleteOne({ _id: oid });
   if (result.deletedCount === 0) { res.status(404).json({ error: 'Not found' }); return; }
   res.status(204).send();
 });

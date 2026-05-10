@@ -1,6 +1,15 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/login');
+  }
+
   return (
     <header className="site-header">
       <NavLink to="/" className="site-brand">hkquantum-tools</NavLink>
@@ -18,6 +27,12 @@ export default function Header() {
           myTODO
         </NavLink>
       </nav>
+      {user && (
+        <div className="site-user">
+          <span className="site-user-name">{user.name}</span>
+          <button className="btn btn--ghost btn--sm" onClick={handleSignOut}>Sign out</button>
+        </div>
+      )}
     </header>
   );
 }

@@ -1,18 +1,17 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDb, LEDGER_OTHER_CATEGORY_ID } from '../../db.js';
 
 const router = Router();
 
-router.get('/', async (_req, res) => {
-  const col = getDb().collection('categories');
+router.get('/', async (req, res) => {
+  const col = req.ledgerDb.collection('categories');
+  const otherId = req.ledgerOtherId.toString();
+  const isOther = (id: string) => id === otherId;
+
   const [orderDoc, docs] = await Promise.all([
     col.findOne({ type: 'order-doc' }),
     col.find({ type: { $exists: false } }).toArray(),
   ]);
-
-  const otherId = LEDGER_OTHER_CATEGORY_ID.toString();
-  const isOther = (id: string) => id === otherId;
 
   if (orderDoc?.order?.length) {
     const idxMap = new Map<string, number>(
@@ -51,7 +50,7 @@ router.put('/order', async (req, res) => {
     res.status(400).json({ error: 'invalid id in order array' });
     return;
   }
-  await getDb().collection('categories').updateOne(
+  await req.ledgerDb.collection('categories').updateOne(
     { type: 'order-doc' },
     { $set: { type: 'order-doc', order: objectIds } },
     { upsert: true }
@@ -67,7 +66,7 @@ router.post('/', async (req, res) => {
   }
   try {
     const now = new Date().toISOString();
-    const result = await getDb().collection('categories').insertOne({ name: name.trim(), created_at: now });
+    const result = await req.ledgerDb.collection('categories').insertOne({ name: name.trim(), created_at: now });
     res.status(201).json({ id: result.insertedId.toString(), name: name.trim(), created_at: now });
   } catch {
     res.status(409).json({ error: 'Category name already exists' });
@@ -79,7 +78,7 @@ router.delete('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const inUse = await getDb().collection('contacts').countDocuments({
+  const inUse = await req.ledgerDb.collection('contacts').countDocuments({
     $or: [{ 'categories.id': oid }, { category_ids: oid }, { category_id: oid }],
   });
   if (inUse > 0) {
@@ -87,7 +86,7 @@ router.delete('/:id', async (req, res) => {
     return;
   }
 
-  const result = await getDb().collection('categories').deleteOne({ _id: oid });
+  const result = await req.ledgerDb.collection('categories').deleteOne({ _id: oid });
   if (result.deletedCount === 0) { res.status(404).json({ error: 'Not found' }); return; }
   res.status(204).send();
 });

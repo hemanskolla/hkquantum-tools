@@ -1,2 +1,0 @@
-export const LEDGER_OTHER_CATEGORY_ID = '69ed71237ba869aee9620036';
-export const TODO_OTHER_CATEGORY_ID = '69fc03fc96ac919bc68df48c';

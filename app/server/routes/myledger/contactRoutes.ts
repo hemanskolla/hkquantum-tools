@@ -1,11 +1,10 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDb, LEDGER_OTHER_CATEGORY_ID } from '../../db.js';
 import type { ContactWithNotes } from '../../../shared/types/myledger.js';
 
 const router = Router();
 
-function toContact(doc: Record<string, any>): ContactWithNotes {
+function toContact(doc: Record<string, any>, otherCategoryId: ObjectId): ContactWithNotes {
   return {
     id: doc._id.toString(),
     name: doc.name,
@@ -15,7 +14,7 @@ function toContact(doc: Record<string, any>): ContactWithNotes {
     linkedin: doc.linkedin ?? null,
     email: doc.email ?? null,
     phone: doc.phone ?? null,
-    categories: (doc.categories ?? [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }]).map(
+    categories: (doc.categories ?? [{ id: otherCategoryId, status: 'actual' }]).map(
       (c: Record<string, any>) => ({
         id: c.id.toString(),
         status: c.status === 'potential' ? 'potential' : 'actual',
@@ -47,9 +46,9 @@ function parseCategories(
   }));
 }
 
-router.get('/', async (_req, res) => {
-  const docs = await getDb().collection('contacts').find().sort({ created_at: 1 }).toArray();
-  res.json(docs.map(toContact));
+router.get('/', async (req, res) => {
+  const docs = await req.ledgerDb.collection('contacts').find().sort({ created_at: 1 }).toArray();
+  res.json(docs.map((d) => toContact(d, req.ledgerOtherId)));
 });
 
 router.post('/', async (req, res) => {
@@ -69,11 +68,11 @@ router.post('/', async (req, res) => {
     try { parsedCats = parseCategories(categories); }
     catch { res.status(400).json({ error: 'Invalid categories' }); return; }
   } else {
-    parsedCats = [{ id: LEDGER_OTHER_CATEGORY_ID, status: 'actual' }];
+    parsedCats = [{ id: req.ledgerOtherId, status: 'actual' }];
   }
 
   const now = new Date().toISOString();
-  const result = await getDb().collection('contacts').insertOne({
+  const result = await req.ledgerDb.collection('contacts').insertOne({
     name: name.trim(),
     role: role?.trim() || null,
     company: company?.trim() || null,
@@ -87,8 +86,8 @@ router.post('/', async (req, res) => {
     updated_at: now,
   });
 
-  const doc = await getDb().collection('contacts').findOne({ _id: result.insertedId });
-  res.status(201).json(toContact(doc!));
+  const doc = await req.ledgerDb.collection('contacts').findOne({ _id: result.insertedId });
+  res.status(201).json(toContact(doc!, req.ledgerOtherId));
 });
 
 router.put('/:id', async (req, res) => {
@@ -111,7 +110,7 @@ router.put('/:id', async (req, res) => {
   try { parsedCats = parseCategories(categories); }
   catch { res.status(400).json({ error: 'Invalid categories' }); return; }
 
-  const doc = await getDb().collection('contacts').findOneAndUpdate(
+  const doc = await req.ledgerDb.collection('contacts').findOneAndUpdate(
     { _id: oid },
     {
       $set: {
@@ -132,7 +131,7 @@ router.put('/:id', async (req, res) => {
   );
 
   if (!doc) { res.status(404).json({ error: 'Not found' }); return; }
-  res.json(toContact(doc));
+  res.json(toContact(doc, req.ledgerOtherId));
 });
 
 router.delete('/:id', async (req, res) => {
@@ -140,7 +139,7 @@ router.delete('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const result = await getDb().collection('contacts').deleteOne({ _id: oid });
+  const result = await req.ledgerDb.collection('contacts').deleteOne({ _id: oid });
   if (result.deletedCount === 0) { res.status(404).json({ error: 'Not found' }); return; }
   res.status(204).send();
 });

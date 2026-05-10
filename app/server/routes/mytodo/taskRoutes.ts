@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getTodoDb } from '../../db.js';
 import type { Task } from '../../../shared/types/mytodo.js';
 
 const router = Router();
@@ -27,7 +26,7 @@ router.get('/', async (req, res) => {
 
   if (view === 'completed') {
     const cutoff = new Date(Date.now() - PURGE_WINDOW_MS).toISOString();
-    const docs = await getTodoDb()
+    const docs = await req.todoDb
       .collection('tasks')
       .find({ completed: true, completed_at: { $gte: cutoff } })
       .sort({ completed_at: -1 })
@@ -36,8 +35,7 @@ router.get('/', async (req, res) => {
     return;
   }
 
-  // Default: active tasks — time-sensitive first, sorted by due_date asc; then rest by updated_at desc
-  const docs = await getTodoDb()
+  const docs = await req.todoDb
     .collection('tasks')
     .find({ completed: false })
     .sort({ time_sensitive: -1, due_date: 1, updated_at: -1 })
@@ -61,7 +59,7 @@ router.post('/', async (req, res) => {
   }
 
   const now = new Date().toISOString();
-  const result = await getTodoDb().collection('tasks').insertOne({
+  const result = await req.todoDb.collection('tasks').insertOne({
     title: title.trim(),
     description: description?.trim() || null,
     category_id: catOid,
@@ -73,7 +71,7 @@ router.post('/', async (req, res) => {
     updated_at: now,
   });
 
-  const doc = await getTodoDb().collection('tasks').findOne({ _id: result.insertedId });
+  const doc = await req.todoDb.collection('tasks').findOne({ _id: result.insertedId });
   res.status(201).json(toTask(doc!));
 });
 
@@ -96,7 +94,7 @@ router.put('/:id', async (req, res) => {
     catch { res.status(400).json({ error: 'Invalid category_id' }); return; }
   }
 
-  const doc = await getTodoDb().collection('tasks').findOneAndUpdate(
+  const doc = await req.todoDb.collection('tasks').findOneAndUpdate(
     { _id: oid },
     {
       $set: {
@@ -120,12 +118,12 @@ router.patch('/:id/complete', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const existing = await getTodoDb().collection('tasks').findOne({ _id: oid });
+  const existing = await req.todoDb.collection('tasks').findOne({ _id: oid });
   if (!existing) { res.status(404).json({ error: 'Not found' }); return; }
 
   const nowCompleted = !existing.completed;
   const now = new Date().toISOString();
-  const doc = await getTodoDb().collection('tasks').findOneAndUpdate(
+  const doc = await req.todoDb.collection('tasks').findOneAndUpdate(
     { _id: oid },
     {
       $set: {
@@ -145,7 +143,7 @@ router.delete('/:id', async (req, res) => {
   try { oid = new ObjectId(req.params['id']); }
   catch { res.status(404).json({ error: 'Not found' }); return; }
 
-  const result = await getTodoDb().collection('tasks').deleteOne({ _id: oid });
+  const result = await req.todoDb.collection('tasks').deleteOne({ _id: oid });
   if (result.deletedCount === 0) { res.status(404).json({ error: 'Not found' }); return; }
   res.status(204).send();
 });

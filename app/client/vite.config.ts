@@ -20,6 +20,7 @@ export default defineConfig({
     port: parseInt(process.env.CLIENT_PORT || '3000'),
     proxy: {
       '/api': `http://localhost:${process.env.SERVER_PORT || '8000'}`,
+      '/auth': `http://localhost:${process.env.SERVER_PORT || '8000'}`,
     },
   },
 });
