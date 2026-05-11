@@ -258,7 +258,7 @@ export default function TodoPage() {
 
               {view === 'completed' && (
                 <div className="todo-completed-banner">
-                  Showing tasks completed in the <strong>past 14 days</strong>. Older completed tasks are automatically removed.
+                  Showing tasks completed in the <strong>past 14 days</strong>. Older completed tasks are not shown.
                 </div>
               )}
 
