@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Background Color Comparison</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 32px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    h1 { font-size: 18px; margin-bottom: 24px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border 0.2s;
+    }
+    .card.current { border-color: #888; }
+    .swatch {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Mini UI preview inside swatch */
+    .preview {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      font-size: 12px;
+      color: #222823;
+      width: 140px;
+    }
+    .preview .bar {
+      height: 8px;
+      border-radius: 4px;
+      background: #BB0A21;
+      margin-bottom: 6px;
+      width: 60%;
+    }
+    .preview .line {
+      height: 6px;
+      border-radius: 3px;
+      background: #D1CDD3;
+      margin-bottom: 4px;
+    }
+    .preview .line.short { width: 70%; }
+    .meta {
+      background: #2a2a2a;
+      padding: 14px 16px;
+    }
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .hex {
+      font-size: 12px;
+      font-family: monospace;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+    .desc {
+      font-size: 11px;
+      color: #777;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: #444;
+      color: #ccc;
+      margin-top: 6px;
+    }
+    .tag.current-tag { background: #555; color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Background Color Options — Current vs Cream-Green</h1>
+  <div class="grid">
+
+    <!-- CURRENT -->
+    <div class="card current">
+      <div class="swatch" style="background:#F4F7F5;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Current</div>
+        <div class="hex">#F4F7F5</div>
+        <div class="desc">Light gray-green. Cool, neutral, slightly clinical.</div>
+        <span class="tag current-tag">current</span>
+      </div>
+    </div>
+
+    <!-- OPTION 1 -->
+    <div class="card">
+      <div class="swatch" style="background:#F5F7EF;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Soft Cream-Green</div>
+        <div class="hex">#F5F7EF</div>
+        <div class="desc">Subtle warm shift. Closest to current — barely noticeable change.</div>
+        <span class="tag">Option A</span>
+      </div>
+    </div>
+
+    <!-- OPTION 2 -->
+    <div class="card">
+      <div class="swatch" style="background:#F2F5E8;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Warm Cream-Green</div>
+        <div class="hex">#F2F5E8</div>
+        <div class="desc">Noticeably warmer and creamier. Natural, organic feel.</div>
+        <span class="tag">Option B</span>
+      </div>
+    </div>
+
+    <!-- OPTION 3 -->
+    <div class="card">
+      <div class="swatch" style="background:#EFF4E6;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Earthy Cream-Green</div>
+        <div class="hex">#EFF4E6</div>
+        <div class="desc">Stronger green tint with cream warmth. Lush, botanical feel.</div>
+        <span class="tag">Option C</span>
+      </div>
+    </div>
+
+    <!-- OPTION 4 -->
+    <div class="card">
+      <div class="swatch" style="background:#F0F5EA;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Balanced Cream-Green</div>
+        <div class="hex">#F0F5EA</div>
+        <div class="desc">Even balance of cream and green. Warm but not too yellow.</div>
+        <span class="tag">Option D</span>
+      </div>
+    </div>
+
+    <!-- OPTION 5 -->
+    <div class="card">
+      <div class="swatch" style="background:#EDEEE3;">
+        <div class="preview">
+          <div class="bar"></div>
+          <div class="line"></div>
+          <div class="line short"></div>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="label">Muted Sage Cream</div>
+        <div class="hex">#EDEEE3</div>
+        <div class="desc">Muted, slightly darker. Sage-meets-linen. More sophisticated tone.</div>
+        <span class="tag">Option E</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
